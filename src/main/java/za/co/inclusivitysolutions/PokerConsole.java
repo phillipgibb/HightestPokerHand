@@ -12,7 +12,8 @@ public class PokerConsole implements Runnable {
 	public void run() {
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
 		while (true) {
-			System.out.println();
+			System.out.println("This app determines the best poker hand you can obtain from the entered list");
+			printHelp();
 			System.out.print("Enter 5 poker cards (2-9, T = 10, Suits=  S,C,D,H) : ");
 			String input;
 			try {
@@ -29,7 +30,12 @@ public class PokerConsole implements Runnable {
 					printHelp();
 					break;
 				default:
-					input = input.toUpperCase();
+					if(input.equalsIgnoreCase("r")){
+						input = CardHelper.randomHand();
+						System.out.println(input);
+					}else{
+						input = input.toUpperCase();
+					}
 					if (CardHelper.validateInput(input)) {
 						String result = CardHelper.determineBestHand(CardHelper.parseHand(input));
 						System.out.println("You have a " + result);
@@ -74,6 +80,7 @@ public class PokerConsole implements Runnable {
 		System.out.println("\tRank = 2,3,4,5,6,7,8,9,T,J,Q,K,A");
 		System.out.println("\tSuit = H(Heart),S(Spade),C(Club),D(Diamond)");
 		System.out.println("\nOther Options:");
+		System.out.println("\tr = random list of cards");
 		System.out.println("\th\\help = This Help Output");
 		System.out.println("\tq\\quit\\exit = Quit");
 		System.out.println();

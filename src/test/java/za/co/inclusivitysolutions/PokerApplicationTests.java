@@ -12,6 +12,16 @@ import reactor.core.publisher.Flux;
 
 public class PokerApplicationTests {
 
+	
+	@Test
+	public void testRandom(){
+		String input = CardHelper.randomHand();
+		System.out.println(input);
+		List<Card> hand = CardHelper.parseHand(input);
+		System.out.println(hand);
+		System.out.println(CardHelper.determineBestHand(hand));
+	}
+	
 	@Test
 	public void testCardSorting() {
 		List<Card> cards = CardHelper.parseHand("5C,QH,2D,3D,5S");
@@ -49,6 +59,8 @@ public class PokerApplicationTests {
 	@Test
 	public void testFourOfaKind() {
 		List<Card> cards = CardHelper.parseHand("3C,3H,3S,3D,7C");
+		assertEquals("Should be a Four Of a kind", "Four of a Kind", CardHelper.determineBestHand(cards));
+		cards = CardHelper.parseHand("5C,5H,5S,5D,4D");
 		assertEquals("Should be a Four Of a kind", "Four of a Kind", CardHelper.determineBestHand(cards));
 	}
 	
@@ -96,7 +108,9 @@ public class PokerApplicationTests {
 	
 	@Test
 	public void testWithaT() {
-		List<Card> cards = CardHelper.parseHand("TC,3H,3S,QH,kC");
+		List<Card> cards = CardHelper.parseHand("10C,3H,3S,QH,kC");
+		assertEquals("Should be a Two of a Kind", "Two of a Kind", CardHelper.determineBestHand(cards));
+		cards = CardHelper.parseHand("TC,3H,3S,QH,kC");
 		assertEquals("Should be a Two of a Kind", "Two of a Kind", CardHelper.determineBestHand(cards));
 	}
 

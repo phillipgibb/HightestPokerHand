@@ -1,8 +1,12 @@
 package za.co.inclusivitysolutions;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.commons.lang.StringUtils;
 
 import reactor.core.publisher.Flux;
 
@@ -47,7 +51,7 @@ public class CardHelper {
 				if (i + 1 == cardArray.length - 1) {
 					if (count == 2) {
 						secondTwoOfaKind = true;
-					} 
+					}
 					if (twoOfaKind && secondTwoOfaKind) {
 						return true;
 					}
@@ -127,12 +131,18 @@ public class CardHelper {
 
 	private static boolean isMultipleOfaKind(Card[] cardArray, int numberOfRank) {
 		boolean multipleOfaKind = false;
-		for (int i = 0; i < numberOfRank - 1; i++) {
+		int count = 1;
+		String rank = null;
+		for (int i = 0; i < cardArray.length - 1; i++) {
 			if (cardArray[i].getRankValue() == cardArray[i + 1].getRankValue()) {
-				multipleOfaKind = true;
-			} else {
-				return false;
+				if (rank == null)
+					rank = cardArray[i].getRank();
+				if (cardArray[i].getRank().equals(rank))
+					count++;
 			}
+		}
+		if (count == numberOfRank) {
+			multipleOfaKind = true;
 		}
 		return multipleOfaKind;
 	}
@@ -166,7 +176,7 @@ public class CardHelper {
 			System.out.println("There are 5 Cards in a poker hand");
 			return false;
 		}
-		String pokerRegex = "([2-9TJQKA][SHDC],?)*";
+		String pokerRegex = "(([2-9TJQKA]|(10))[SHDC],?)*";
 		Pattern p = Pattern.compile(pokerRegex, Pattern.CASE_INSENSITIVE);
 
 		Matcher m = p.matcher(input);
@@ -180,10 +190,31 @@ public class CardHelper {
 	}
 
 	public static List<Card> parseHand(String cardString) {
+		cardString = cardString.replaceAll("10", "t");
 		String[] cardStringArray = cardString.split(",");
+		
 		return Flux.fromArray(cardStringArray).map(card -> new Card(card.substring(0, 1), card.substring(1)))
 				.collectSortedList(new CardComparator()).block();
 
+	}
+
+	public static String randomHand() {
+		List<Card> deck = new ArrayList<Card>(52);
+		CardSuit[] suits = CardSuit.values();
+		CardRank[] ranks = CardRank.values();
+
+		for (CardSuit suit : suits) {
+			for (CardRank rank : ranks) {
+				deck.add(new Card(rank.getRankString(), suit.getSuitString()));
+			}
+		}
+		List<Card> hand = new ArrayList<Card>(5);
+		Random rc = new Random();
+		for (int i = 0; i < 5; i++) {
+			hand.add(deck.remove(rc.nextInt(deck.size())));
+		}
+
+		return StringUtils.join(hand, ",");
 	}
 
 }
